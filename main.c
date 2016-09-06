@@ -1,6 +1,12 @@
 #include<string.h>
 #include<stdio.h>
 
+/*
+ * Function prototypes
+ */ 
+void interactive();
+void batch();
+
 int main(int argc, char* argv[]) {
 
 	//TODO: Determine whether this shell is being run in interactive mode
