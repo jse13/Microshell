@@ -6,7 +6,6 @@
 
 
 #define DEBUG 1
-#define PROMPT :O 
 /*
  * Function prototypes
  */ 
@@ -22,23 +21,38 @@ int getArgs(char* arglist, char* command);
 
 int main(int argc, char* argv[]) {
 
-	//TODO: Determine whether this shell is being run in interactive mode
+	//Determine whether this shell is being run in interactive mode
 	//or batch mode
-	//TODO: launch the related function
+	if(argc == 1)
+		interactive();
+	else
+		batch();
+
+	return 0;
 }
 
 //Controlling function for interactive mode
 void interactive() {
+	int quitting = 0;
+
+	if(DEBUG)
+		printf("Starting in interactive mode\n");
 
 	//TODO: create a loop to get user input
-		//TODO: Display prompt string
+	while(!quitting) {
+		//Display prompt string
+		//printf("|> ");
 		//TODO: ask for input
 		//TODO: check input for ; or "quit"
 		//TODO: run command(s)
+	}
 }
 
 //Controlling function for batch mode
 void batch() {
+
+	if(DEBUG)
+		printf("Starting in batch mode\n");
 
 	//TODO: create loop to parse batch file
 		//TODO: get the command
