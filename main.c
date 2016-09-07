@@ -1,6 +1,8 @@
 #include<string.h>
 #include<stdio.h>
 
+#define DEBUG 1
+#define PROMPT :O 
 /*
  * Function prototypes
  */ 
