@@ -3,7 +3,7 @@
 #include<sys/types.h> // For pid_t type
 #include<sys/wait.h>  // For wait()
 #include<unistd.h>    //Declarations for execvp(), access(), etc
-
+#include<string.h>    //String operations like strcmp()
 
 #define DEBUG 1
 /*
@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
 void interactive() {
 	int quitting = 0;
 
+	//Buffer for read-in instruction, with max size of 256
+	char instBuffer[256];
+
 	if(DEBUG)
 		printf("Starting in interactive mode\n");
 
@@ -41,11 +44,19 @@ void interactive() {
 	while(!quitting) {
 		//Display prompt string
 		printf("|> ");
-		//TODO: ask for input
-		//scanf("%);
+		//ask for input
+		scanf("%255s", instBuffer);
 		//TODO: check input for ; or "quit"
+		if(strcmp(instBuffer, "quit") == 0) {
+			if(DEBUG)
+				printf("Quitting interactive mode\n");
+			quitting = 1;
+		}
 		//TODO: run command(s)
+		//else(if a legit command) {}
+	
 	}
+
 }
 
 //Controlling function for batch mode
