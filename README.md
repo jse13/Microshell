@@ -3,4 +3,9 @@
 # By: Julian Engel (jse13)
 #----------------------------------------------------------------------------#
 
+Design Overview:
+
+Complete Specification:
+
+Known Bugs/Problems:
 

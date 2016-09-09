@@ -12,12 +12,11 @@
 void interactive();
 void batch();
 int spawnproc(char* command);
-
+int getArgs(char* arglist, char* command);
 
 /*
  * Main function
  */ 
-int getArgs(char* arglist, char* command);
 
 int main(int argc, char* argv[]) {
 
@@ -38,11 +37,12 @@ void interactive() {
 	if(DEBUG)
 		printf("Starting in interactive mode\n");
 
-	//TODO: create a loop to get user input
+	//create a loop to get user input
 	while(!quitting) {
 		//Display prompt string
-		//printf("|> ");
+		printf("|> ");
 		//TODO: ask for input
+		//scanf("%);
 		//TODO: check input for ; or "quit"
 		//TODO: run command(s)
 	}
