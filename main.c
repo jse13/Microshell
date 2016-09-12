@@ -35,7 +35,7 @@ void interactive() {
 	int quitting = 0;
 
 	//Buffer for read-in instruction, with max size of 256
-	char instBuffer[256];
+	char instBuffer[512];
 
 	if(DEBUG)
 		printf("Starting in interactive mode\n");
@@ -45,13 +45,17 @@ void interactive() {
 		//Display prompt string
 		printf("|> ");
 		//ask for input
-		scanf("%255s", instBuffer);
-		//TODO: check input for ; or "quit"
-		if(strcmp(instBuffer, "quit") == 0) {
+		scanf("%511s", instBuffer);
+
+		//Check input for EOF (ctrl-d exit case)  or "quit"
+		if(strcmp(instBuffer, "quit") == 0 || strcmp(instBuffer, "\0") == 0) {
 			if(DEBUG)
 				printf("Quitting interactive mode\n");
 			quitting = 1;
 		}
+		//TODO: check if command line is empty
+		//TODO: check if CTRL-D was pressed (EOF simulation)
+
 		//TODO: run command(s)
 		//else(if a legit command) {}
 	
@@ -76,10 +80,13 @@ void batch() {
 int spawnproc(char* command) {
 	//TODO: Call getArgs() to pull out the argument list for the command
 	//TODO: Use execvp() here and pass in the command as-is
+	return 0;
 }
 
 //Function to pull out args from a command, because they must be passed in separately
 //into execvp()
 int getArgs(char* arglist, char* command) {
-
+	
+	//strtok();
+	return 0;
 }
