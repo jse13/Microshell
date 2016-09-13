@@ -67,8 +67,9 @@ void interactive() {
 				fprintf(stderr, "Quitting interactive mode.\n");
 			quitting = 1;
 		}
-		//TODO: run command(s); check the first element to make sure 
+		//Run command(s); check the first element to make sure 
 		//it isn't empty
+		//An empty string may cause problems with strtok down the line
 		else if(instBuffer[0] != '\0') {
 		
 			if(spawnproc(instBuffer) == 1)
@@ -124,7 +125,7 @@ int getArgs(struct sCommand* arglist, char* command) {
 		//Temporarily store the entire command in the command field
 		arglist[i].command = token;
 		//Fetch the next token
-		token = strtok(command, delim);
+		token = strtok(NULL, delim);
 
 	}
 
@@ -138,10 +139,24 @@ int getArgs(struct sCommand* arglist, char* command) {
 
 		token = strtok(arglist[j].command, delim);
 		for(k = 0; token != NULL; k++) {
-
-			strcat(arglist[i].args, strcat(" ", token));
+			strcat(arglist[i].args[k], token);
+			token = strtok(NULL, delim);
 		}
+
+		//Append a NULL at the end of the argument array
+		arglist[j].args[k+1] = NULL;
 	
 	}
+	
+	if(DEBUG) {
+		fprintf(stderr, "Arguments:\n");
+		for(j = 0; j <= i; j++) {
+			fprintf(stderr, "\t%s ", arglist[j].command);
+			for(k = 0; arglist[j].args[k] != NULL; k++)
+				fprintf(stderr, "%s ", arglist[j].args[k]);
+			fprintf(stderr, "\n");
+		}
+	}
+
 	return 0;
 }
