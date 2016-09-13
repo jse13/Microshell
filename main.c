@@ -11,7 +11,7 @@
  * Struct for instructions
  */ 
 struct sCommand {
-	char command[512];
+	char* command;
 	char* args[257];
 };
 
@@ -57,7 +57,7 @@ void interactive() {
 		//ask for input; check against EOF in case <C-d> was pressed
 		if(scanf("%511s", instBuffer) == EOF) {
 			if(DEBUG)
-				fprintf(stderr, "EOF hit, terminating...\n");
+				fprintf(stderr, "\nEOF hit, terminating...\n");
 			quitting = 1;
 		}
 
@@ -100,7 +100,10 @@ int spawnproc(char* command) {
 
 	//Array of structs to store the exploded arguments
 	struct sCommand args[257];
+
 	//TODO: Call getArgs() to pull out the argument list for the command
+	getArgs(args, command);
+	
 	//TODO: Use execvp() here and pass in the command as-is
 	return 0;
 }
@@ -109,6 +112,36 @@ int spawnproc(char* command) {
 //separately into execvp()
 int getArgs(struct sCommand* arglist, char* command) {
 	
-	//strtok();
+	//First, break input up based on ; token
+	int i;
+	char* token;
+	char* delim = ";";
+
+	token = strtok(command, delim);
+
+	for(i = 0; token != NULL; i++) {
+
+		//Temporarily store the entire command in the command field
+		arglist[i].command = token;
+		//Fetch the next token
+		token = strtok(command, delim);
+
+	}
+
+	//Store the last thing read in by the loop
+	arglist[i].command = token;
+
+	//Next, cycle through each command and break it up into its arguments
+	int j, k;
+	delim = " ";
+	for(j = 0; j <= i; j++) {
+
+		token = strtok(arglist[j].command, delim);
+		for(k = 0; token != NULL; k++) {
+
+			strcat(arglist[i].args, strcat(" ", token));
+		}
+	
+	}
 	return 0;
 }
