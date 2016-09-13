@@ -6,13 +6,22 @@
 #include<string.h>    //String operations like strcmp()
 
 #define DEBUG 1
+
+/*
+ * Struct for instructions
+ */ 
+struct sCommand {
+	char command[512];
+	char* args[257];
+};
+
 /*
  * Function prototypes
  */ 
 void interactive();
 void batch();
 int spawnproc(char* command);
-int getArgs(char* arglist, char* command);
+int getArgs(struct sCommand* arglist, char* command);
 
 /*
  * Main function
@@ -44,20 +53,30 @@ void interactive() {
 	while(!quitting) {
 		//Display prompt string
 		printf("|> ");
-		//ask for input
-		scanf("%511s", instBuffer);
 
-		//Check input for EOF (ctrl-d exit case)  or "quit"
-		if(strcmp(instBuffer, "quit") == 0 || strcmp(instBuffer, "\0") == 0) {
+		//ask for input; check against EOF in case <C-d> was pressed
+		if(scanf("%511s", instBuffer) == EOF) {
 			if(DEBUG)
-				printf("Quitting interactive mode\n");
+				fprintf(stderr, "EOF hit, terminating...\n");
 			quitting = 1;
 		}
-		//TODO: check if command line is empty
-		//TODO: check if CTRL-D was pressed (EOF simulation)
 
-		//TODO: run command(s)
-		//else(if a legit command) {}
+		//Check for "quit" command
+		if(strcmp(instBuffer, "quit") == 0) {
+			if(DEBUG)
+				fprintf(stderr, "Quitting interactive mode.\n");
+			quitting = 1;
+		}
+		//TODO: run command(s); check the first element to make sure 
+		//it isn't empty
+		else if(instBuffer[0] != '\0') {
+		
+			if(spawnproc(instBuffer) == 1)
+				fprintf(stderr, "Failed to spawn child process.\n");
+		
+		}
+
+		//TODO: check if command line is empty
 	
 	}
 
@@ -78,14 +97,17 @@ void batch() {
 
 //Function to spawn a child process and let it execute
 int spawnproc(char* command) {
+
+	//Array of structs to store the exploded arguments
+	struct sCommand args[257];
 	//TODO: Call getArgs() to pull out the argument list for the command
 	//TODO: Use execvp() here and pass in the command as-is
 	return 0;
 }
 
-//Function to pull out args from a command, because they must be passed in separately
-//into execvp()
-int getArgs(char* arglist, char* command) {
+//Function to pull out args from a command, because they must be passed in 
+//separately into execvp()
+int getArgs(struct sCommand* arglist, char* command) {
 	
 	//strtok();
 	return 0;
