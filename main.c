@@ -65,7 +65,9 @@ void interactive() {
 			fprintf(stderr, "Current buffer is %s\n", instBuffer);
 
 		//Check for "quit" command
-		if(strcmp(instBuffer, "quit") == 0) {
+		//Only compare the first four characters because they're the
+		//Only relevant ones
+		if(strncmp(instBuffer, "quit", 4) == 0) {
 			if(DEBUG)
 				fprintf(stderr, "Quitting interactive mode.\n");
 			quitting = 1;
@@ -140,11 +142,15 @@ int getArgs(struct sCommand* arglist, char* command) {
 	arglist[i].command = token;
 
 	//Next, cycle through each command and break it up into its arguments
-	int j, k;
+	int j = 0, k;
 	delim = " ";
-	for(j = 0; j <= i; j++) {
 
-		token = strtok(arglist[j].command, delim);
+	//Throw away the first token, since it's just the command name
+	token = strtok(arglist[j].command, delim);
+
+	for(j; j <= i; j++) {
+
+		token = strtok(NULL, delim);
 		for(k = 0; token != NULL; k++) {
 			if(DEBUG)
 				fprintf(stderr, "Processing argument %s\n", token);
@@ -161,7 +167,7 @@ int getArgs(struct sCommand* arglist, char* command) {
 	if(DEBUG) {
 		fprintf(stderr, "Arguments:\n");
 		for(j = 0; j <= i; j++) {
-			fprintf(stderr, "\t%s ", arglist[j].command);
+			fprintf(stderr, "\t%s | ", arglist[j].command);
 			for(k = 0; arglist[j].args[k] != NULL; k++)
 				fprintf(stderr, "%s ", arglist[j].args[k]);
 			fprintf(stderr, "\n");
