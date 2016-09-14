@@ -13,14 +13,14 @@
 struct sCommand {
 	char* command;
 	char* args[257];
-};
+} snCommand = {NULL, NULL};
 
 /*
  * Function prototypes
  */ 
 void interactive();
 void batch();
-int spawnproc(char* command);
+int spawnProc(char* command);
 int getArgs(struct sCommand* arglist, char* command);
 
 /*
@@ -55,11 +55,14 @@ void interactive() {
 		printf("|> ");
 
 		//ask for input; check against EOF in case <C-d> was pressed
-		if(scanf("%511s", instBuffer) == EOF) {
+		if(fgets(instBuffer, 511, stdin) == NULL) {
 			if(DEBUG)
 				fprintf(stderr, "\nEOF hit, terminating...\n");
 			quitting = 1;
 		}
+
+		if(DEBUG)
+			fprintf(stderr, "Current buffer is %s\n", instBuffer);
 
 		//Check for "quit" command
 		if(strcmp(instBuffer, "quit") == 0) {
@@ -70,9 +73,9 @@ void interactive() {
 		//Run command(s); check the first element to make sure 
 		//it isn't empty
 		//An empty string may cause problems with strtok down the line
-		else if(instBuffer[0] != '\0') {
+		else if(instBuffer[0] != '\0' && quitting != 1) {
 		
-			if(spawnproc(instBuffer) == 1)
+			if(spawnProc(instBuffer) == 1)
 				fprintf(stderr, "Failed to spawn child process.\n");
 		
 		}
@@ -97,12 +100,14 @@ void batch() {
 }
 
 //Function to spawn a child process and let it execute
-int spawnproc(char* command) {
+int spawnProc(char* command) {
 
 	//Array of structs to store the exploded arguments
 	struct sCommand args[257];
 
-	//TODO: Call getArgs() to pull out the argument list for the command
+	//Call getArgs() to pull out the argument list for the command
+	if(DEBUG)
+		fprintf(stderr, "Calling getArgs() from spawnProc()\n");
 	getArgs(args, command);
 	
 	//TODO: Use execvp() here and pass in the command as-is
@@ -122,10 +127,12 @@ int getArgs(struct sCommand* arglist, char* command) {
 
 	for(i = 0; token != NULL; i++) {
 
+		if(DEBUG)
+			fprintf(stderr, "Processing command %s\n", token);
 		//Temporarily store the entire command in the command field
 		arglist[i].command = token;
 		//Fetch the next token
-		token = strtok(NULL, delim);
+		token = strtok(NULL, delim); //!! It's still using whitespace to delimit
 
 	}
 
@@ -139,7 +146,10 @@ int getArgs(struct sCommand* arglist, char* command) {
 
 		token = strtok(arglist[j].command, delim);
 		for(k = 0; token != NULL; k++) {
-			strcat(arglist[i].args[k], token);
+			if(DEBUG)
+				fprintf(stderr, "Processing argument %s\n", token);
+			fprintf(stderr, "accessing arg %d in command %d\n", k, j);
+			arglist[j].args[k] = token;
 			token = strtok(NULL, delim);
 		}
 
