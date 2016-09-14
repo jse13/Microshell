@@ -142,31 +142,30 @@ int getArgs(struct sCommand* arglist, char* command) {
 	arglist[i].command = token;
 
 	//Next, cycle through each command and break it up into its arguments
-	int j = 0, k;
+	int j, k;
 	delim = " ";
 
-	//Throw away the first token, since it's just the command name
-	token = strtok(arglist[j].command, delim);
+	for(j = 0; j <= i; j++) {
 
-	for(j; j <= i; j++) {
+		//Throw away the first token, since it's just the command name
+		token = strtok(arglist[j].command, delim);
 
 		token = strtok(NULL, delim);
 		for(k = 0; token != NULL; k++) {
 			if(DEBUG)
 				fprintf(stderr, "Processing argument %s\n", token);
-			fprintf(stderr, "accessing arg %d in command %d\n", k, j);
+
 			arglist[j].args[k] = token;
 			token = strtok(NULL, delim);
 		}
 
 		//Append a NULL at the end of the argument array
 		arglist[j].args[k+1] = NULL;
-	
 	}
 	
 	if(DEBUG) {
 		fprintf(stderr, "Arguments:\n");
-		for(j = 0; j <= i; j++) {
+		for(j = 0; j < i; j++) {
 			fprintf(stderr, "\t%s | ", arglist[j].command);
 			for(k = 0; arglist[j].args[k] != NULL; k++)
 				fprintf(stderr, "%s ", arglist[j].args[k]);
