@@ -21,7 +21,7 @@ struct sCommand {
 void interactive();
 void batch();
 int spawnProc(char* command);
-int getArgs(struct sCommand* arglist, char* command);
+void getArgs(struct sCommand* arglist, char* command);
 
 /*
  * Main function
@@ -113,12 +113,17 @@ int spawnProc(char* command) {
 	getArgs(args, command);
 	
 	//TODO: Use execvp() here and pass in the command as-is
+	//TODO: Create logic that spawns a child loop using fork(); check its error status!
+		//TODO: have child loop execute the commands from getArgs()
+		//TODO: check to see if execvp() failed
+	//TODO: check to see if the process is the parent; if it is, wait()
+	
 	return 0;
 }
 
 //Function to pull out args from a command, because they must be passed in 
 //separately into execvp()
-int getArgs(struct sCommand* arglist, char* command) {
+void getArgs(struct sCommand* arglist, char* command) {
 	
 	//First, break input up based on ; token
 	int i;
@@ -173,5 +178,4 @@ int getArgs(struct sCommand* arglist, char* command) {
 		}
 	}
 
-	return 0;
 }
