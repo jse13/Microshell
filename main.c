@@ -6,7 +6,7 @@
 #include<unistd.h>    //Declarations for execvp(), access(), etc
 #include<string.h>    //String operations like strcmp()
 
-#define DEBUG 1
+#define DEBUG 0
 
 /*
  * Struct for instructions
@@ -20,8 +20,8 @@ struct sCommand {
  * Function prototypes
  */ 
 void interactive();
-void batch();
-int spawnProc(char* command);
+void batch(char* filename);
+void spawnProc(char* command);
 void getArgs(struct sCommand* arglist, char* command);
 
 /*
@@ -34,8 +34,10 @@ int main(int argc, char* argv[]) {
 	//or batch mode
 	if(argc == 1)
 		interactive();
+	else if(argc == 2)
+		batch(argv[1]);
 	else
-		batch();
+		fprintf(stderr, "Error: too many arguments.\n");
 
 	return 0;
 }
@@ -78,8 +80,7 @@ void interactive() {
 		//An empty string may cause problems with strtok down the line
 		else if(instBuffer[0] != '\n' && quitting != 1) {
 		
-			if(spawnProc(instBuffer) == 1)
-				fprintf(stderr, "Failed to spawn child process.\n");
+			spawnProc(instBuffer);
 		
 		}
 	
@@ -88,20 +89,63 @@ void interactive() {
 }
 
 //Controlling function for batch mode
-void batch() {
+void batch(char* filename) {
 
 	if(DEBUG)
 		printf("Starting in batch mode\n");
 
-	//TODO: create loop to parse batch file
-		//TODO: get the command
+	int quitting = 0;
+	char instBuffer[512];
+
+	//Open the file; if it doesn't exist print error and  exit the program
+	FILE* bFile;
+	if((bFile = fopen(filename, "r")) == NULL ) 
+		fprintf(stderr, "Error: file doesn't exist.\n");
+	else {
+	//Loop to read in each line of the input until quitting = 1
+		while(quitting != 1) {
+		//If the quit command is parsed or EOF is encountered, exit
+			if(fgets(instBuffer, 511, bFile) == NULL) {
+				if(DEBUG)
+					fprintf(stderr, "EOF hit, terminating...\n");
+				quitting = 1;
+			}
+			//Check to see if the quit command has been entered
+			else if(strncmp(instBuffer, "quit", 4) == 0) {
+				if(DEBUG)
+					fprintf(stderr, "Quitting batch mode.\n");
+				quitting = 1;
+			}
+			//So long as the line read in isn't blank
+			else if(instBuffer[0] != '\n') {
+
+				//Print out the command to run
+				printf("Running %s\n", instBuffer);
+
+				//Run the command
+				spawnProc(instBuffer);
+
+			}
 		//TODO: echo the command before running it
-		//TODO: check for ; or "quit"
 		//TODO: run command(s)
+		
+		}
+
+	}
+
+	//After all is said and done, close the opened file
+	if((fclose(bFile)) == 0)
+		if(DEBUG)
+			fprintf(stderr, "File closed successfully.\n");
+		else;
+	else
+		if(DEBUG)
+			fprintf(stderr, "Unable to close file.\n");
+
 }
 
 //Function to spawn a child process and let it execute
-int spawnProc(char* command) {
+void spawnProc(char* command) {
 
 	//Vars
 	pid_t child; //PID returned by fork()
@@ -156,7 +200,6 @@ int spawnProc(char* command) {
 					(long) c, cstatus);
 	}
 
-	return 0;
 }
 
 //Function to pull out args from a command, because they must be passed in 
