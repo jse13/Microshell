@@ -1,2 +1,2 @@
 main:
-	gcc -lm main.c -o tinysh
+	gcc -std=c99 -Wall -Wextra -Werror -o tinysh shell.c
