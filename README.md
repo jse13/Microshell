@@ -1,7 +1,5 @@
-#---------------------------------------------------------------------#
 # COP4610 Operating Systems Project 1: Shell
-# By: Julian Engel (jse13)
-#---------------------------------------------------------------------#
+## By: Julian Engel (jse13)
 
 ##Design Overview
 The overall structure of this program is as follows:
