@@ -14,14 +14,14 @@
 struct sCommand {
 	char* command;
 	char* args[257];
-} snCommand = {NULL, NULL};
+} snCommand = {NULL, {NULL}};
 
 /*
  * Function prototypes
  */ 
 void interactive();
 void batch(char* filename);
-void spawnProc(char* command);
+int spawnProc(char* command);
 void getArgs(struct sCommand* arglist, char* command);
 
 /*
@@ -80,7 +80,7 @@ void interactive() {
 		//An empty string may cause problems with strtok down the line
 		else if(instBuffer[0] != '\n' && quitting != 1) {
 		
-			spawnProc(instBuffer);
+			quitting = spawnProc(instBuffer);
 		
 		}
 	
@@ -123,7 +123,7 @@ void batch(char* filename) {
 				printf("Running %s\n", instBuffer);
 
 				//Run the command
-				spawnProc(instBuffer);
+				quitting = spawnProc(instBuffer);
 
 			}
 		//TODO: echo the command before running it
@@ -137,7 +137,7 @@ void batch(char* filename) {
 	if((fclose(bFile)) == 0)
 		if(DEBUG)
 			fprintf(stderr, "File closed successfully.\n");
-		else;
+		else{}
 	else
 		if(DEBUG)
 			fprintf(stderr, "Unable to close file.\n");
@@ -145,7 +145,8 @@ void batch(char* filename) {
 }
 
 //Function to spawn a child process and let it execute
-void spawnProc(char* command) {
+//Returns 1 if quit is one of the commands
+int spawnProc(char* command) {
 
 	//Vars
 	pid_t child; //PID returned by fork()
@@ -153,6 +154,7 @@ void spawnProc(char* command) {
 	pid_t c; //PID returned by wait()
 	
 	int i, j;
+	int toReturn = 0;
 	//Array of structs to store the exploded arguments
 	struct sCommand args[257];
 
@@ -170,7 +172,11 @@ void spawnProc(char* command) {
 		fprintf(stderr, "Forking processes:\n");
 
 	for(j = 0; j < i; j++) {
-		if((child = fork()) == 0) {
+		if(strncmp(args[j].args[0], "quit", 4) == 0) {
+			toReturn = 1;
+			i--;
+		}
+		else if((child = fork()) == 0) {
 			//If child, run execvp()
 
 			execvp(args[j].args[0], args[j].args);
@@ -200,6 +206,7 @@ void spawnProc(char* command) {
 					(long) c, cstatus);
 	}
 
+	return toReturn;
 }
 
 //Function to pull out args from a command, because they must be passed in 
